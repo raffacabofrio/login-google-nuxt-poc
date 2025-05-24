@@ -2,10 +2,14 @@
   <div>
     <h1>POC - Login com Google</h1>
     <div style="width: 300px;" id="google-btn"></div>
+
+    <button @click="requestAccessToken" style="margin-top: 20px;">Obter Access Token</button>
+
     <hr />
-    <h2>Token ID</h2>
-    <p>Esse é o token ID que você vai enviar pro backend:</p>
-    <textarea v-model="idToken" style="width: 300px; height: 400px;"></textarea>
+    <h2>ID Token</h2>
+    <textarea v-model="idToken" style="width: 300px; height: 150px;"></textarea>
+    <h2>Access Token</h2>
+    <textarea v-model="accessToken" style="width: 300px; height: 150px;"></textarea>
   </div>
 </template>
 
@@ -13,11 +17,10 @@
 import { ref, onMounted } from 'vue'
 
 const idToken = ref('')
+const accessToken = ref('')
+let tokenClient = null
 
-const handleCredentialResponse = (response) => {
-  idToken.value = response.credential
-  console.log('ID Token:', idToken.value)
-}
+const CLIENT_ID = '859015868383-c1a17ah602teo7buescso3l1ojj2aat9.apps.googleusercontent.com'
 
 function injectGoogleScript() {
   return new Promise((resolve, reject) => {
@@ -40,25 +43,37 @@ function injectGoogleScript() {
   })
 }
 
-onMounted(async () => {
-  try {
-    await injectGoogleScript()
-
-    console.log('Google ID loaded')
-
-    window.google.accounts.id.initialize({
-      client_id: '673818371066-vpl8inqrqub1pnn8abe9q6el4vcbh1cs.apps.googleusercontent.com',
-      callback: handleCredentialResponse
-    })
-
-    console.log('Google ID initialized')
-
-    window.google.accounts.id.renderButton(
-      document.getElementById("google-btn"),
-      { theme: "outline", size: "large" }
-    )
-  } catch (err) {
-    console.error('Erro ao carregar o script do Google:', err)
+function requestAccessToken() {
+  if (tokenClient) {
+    tokenClient.requestAccessToken()
+  } else {
+    console.warn('TokenClient não está pronto')
   }
+}
+
+onMounted(async () => {
+  await injectGoogleScript()
+
+  window.google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    callback: (response) => {
+      idToken.value = response.credential
+      console.log('ID Token:', response.credential)
+    }
+  })
+
+  window.google.accounts.id.renderButton(
+    document.getElementById("google-btn"),
+    { theme: "outline", size: "large" }
+  )
+
+  tokenClient = window.google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: 'openid email profile https://www.googleapis.com/auth/userinfo.profile',
+    callback: (tokenResponse) => {
+      accessToken.value = tokenResponse.access_token
+      console.log('Access Token:', tokenResponse.access_token)
+    }
+  })
 })
 </script>
