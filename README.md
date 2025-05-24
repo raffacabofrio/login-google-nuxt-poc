@@ -1,31 +1,16 @@
-# Nuxt Minimal Starter
+# LOGIN GOOGLE POC 
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
-## Setup
-
-Make sure to install dependencies:
+## Primeiros passos
 
 ```bash
 # npm
 npm install
 
-# pnpm
-pnpm install
+# cli do nuxt
+npm install -g nuxi
 
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
+# roda local
 npm run dev
 ```
 
@@ -34,18 +19,16 @@ npm run dev
 Build the application for production:
 
 ```bash
-# npm
-npm run build
-
-surge ./dist https://pegasus-login-google-poc.surge.sh
+# build estático + deploy no surge ( ver package.json para mais detalhes )
+npm run deploy
 ```
 
-Locally preview production build:
 
-```bash
-# npm
-npm run preview
-```
 
 ## validação online
-https://pegasus-login-google-poc.surge.sh/
+
+### 1 - gere um id token ou access token com nossa poc
+https://pegasus-login-google-poc.surge.sh
+
+### 2 - tente usar para se autenticar no pegasus account api
+https://account.pegasus-soft.com.br/swagger
